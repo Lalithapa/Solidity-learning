@@ -18,3 +18,7 @@ contract visibility{
 contract second is visibility{
     uint public demo= f3();
 }
+contract third{
+    visibility object= new visibility();
+    uint public demo= object.f4();
+}
