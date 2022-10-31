@@ -48,5 +48,14 @@ contract FundMe{
     if(msg.sender != i_owner){revert notOwner();}
     _; // this means- do the rest of the code after checking the require;
      }
-     
+      // Function to receive Ether. msg.data must be empty
+      //if someone accidently send ether it will go and revert back
+    receive() external payable {
+        fund();
+    }
+
+    // Fallback function is called when msg.data is not empty
+    fallback() external payable {
+        fund();
+    }
 }
