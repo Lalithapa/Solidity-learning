@@ -7,7 +7,7 @@ contract FundMe{
        owner= msg.sender;
     }
     using PriceConverter for uint256;   //Taken from PriceConverter library
-    uint public minimumUsd=1 ether;
+    uint public minimumUsd=50 *1e18;
    address[] public funders;// to track the sender address
     mapping(address=>uint256) public addressAmtFunded;
     function fund() public payable{
@@ -22,8 +22,7 @@ contract FundMe{
     } 
     //oracle and chainlink- we have to use decentralized oracle to get the price of 1 ether into rs
     // blockchain oracle - any device that interacts with the off-chain world to  provide data or computational to the smart contracts.ink 
-     function widthdraw() public {
-         require(msg.sender == owner,"You're not the Owner");
+     function widthdraw() public onlyOwner{
         //  starting index; ending Index; step
          for(uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++){
             address funder= funders[funderIndex];
@@ -38,7 +37,13 @@ contract FundMe{
             // bool SuccessFul= payable( msg.sender).transfer(address(this).balance);
             // require(SuccessFul," Sending Failed");
         //3)  call  (Recommended)
-         (bool callSuccess, bytes memory data) = payable(msg.sender).call{value: address(this).balance}("");
+         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
          require(callSuccess,"Call Failed");
      }
+     modifier onlyOwner(){
+        //  _; at starting this means first check the code and the do require
+    require(msg.sender == owner,"You're not the Owner");
+    _; // this means- do the rest of the code after checking the require;
+     }
+     
 }
