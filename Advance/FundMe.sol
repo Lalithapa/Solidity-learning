@@ -1,13 +1,15 @@
 // SPDX-License-Identifier:MIT
 pragma solidity ^0.8.8;
 import './PriceConverter.sol';
+ error notOwner(); //custom error handling to gas optimization
 contract FundMe{
-     address public owner;
+     address public immutable i_owner;
     constructor(){
-       owner= msg.sender;
+       i_owner= msg.sender;
     }
     using PriceConverter for uint256;   //Taken from PriceConverter library
-    uint public minimumUsd=50 *1e18;
+    //constant and immutable make the code gas efficient;
+    uint public constant minimumUsd=50 *1e18; // constant keyword make the code gas efficient
    address[] public funders;// to track the sender address
     mapping(address=>uint256) public addressAmtFunded;
     function fund() public payable{
@@ -42,7 +44,8 @@ contract FundMe{
      }
      modifier onlyOwner(){
         //  _; at starting this means first check the code and the do require
-    require(msg.sender == owner,"You're not the Owner");
+    // require(msg.sender == i_owner,"You're not the Owner");
+    if(msg.sender != i_owner){revert notOwner();}
     _; // this means- do the rest of the code after checking the require;
      }
      
