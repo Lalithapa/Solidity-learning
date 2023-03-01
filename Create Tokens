@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0;
+
+interface Check{
+    function minter() external returns(address);
+    function mint(address receiver, uint amount) external;
+    function send(address receiver, uint amount) external;
+    event Sent(address from, address to, uint amount);
+    error InsufficientBalance(uint requested, uint available);
+}
+
+contract tokens is Check{
+    address Minter;
+    struct address_tokens{
+        uint token_Hold;
+    }
+    mapping(address => address_tokens) public addresses;
+
+    function minter() external override view returns(address){
+     return Minter;
+    }
+
+    function mint(address receiver, uint amount) external override{
+        require(msg.sender == Minter, "You Are not a Minter");
+        addresses[receiver]=address_tokens(amount);
+    }
+
+    function send(address receiver, uint amount) external override{
+        if( amount > addresses[msg.sender].token_Hold ){
+           revert InsufficientBalance( amount , addresses[receiver].token_Hold );
+        }
+        addresses[msg.sender].token_Hold -=amount;
+        addresses[receiver].token_Hold +=amount;
+        emit Sent(msg.sender, receiver, amount);
+    }
+
+    receive() external payable{
+
+    }
+
+    constructor() {
+        Minter= msg.sender;
+    }
+
+
+}
