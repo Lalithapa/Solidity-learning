@@ -46,5 +46,10 @@ contract FundMe{
          //require(msg.sender == i_owner, "You are not the owner");
          _;
        }
-      
+          receive() external payable{
+       fundme();  // by default fund function will active by default 
+    }
+      fallback() external payable{
+            fundme();  // by default fund function will active by default 
+      }
 }
