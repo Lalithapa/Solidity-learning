@@ -5,18 +5,23 @@ pragma solidity ^0.8.9;
 
 contract FundMe{
      using PriceConverter for uint256;
+     address public owner;
+
+     constructor(){
+       owner = msg.sender;
+     }
 
     uint public MINIMUM_USD=50;
      address[] public funderdsAddress;
-     bool public kjuahd;
+     uint public kjuahd;
      mapping(address => uint256) public amountFunded;
      function fundme() payable public {
-        
+        kjuahd= msg.value.getConversionRate();
      require( msg.value.getConversionRate() > MINIMUM_USD, "You need to spend more ETH!");
      funderdsAddress.push(msg.sender);
      amountFunded[msg.sender]= msg.value;
      }
-      function withdraw() public {
+      function withdraw() public isOwner {
          // payable(0x5B38Da6a701c568545dCfcB03FcB875f56beddC4).transfer();
           for(uint i = 0 ; i< funderdsAddress.length ; i++){
               address fundAdd = funderdsAddress[i];
@@ -36,4 +41,8 @@ contract FundMe{
             funderdsAddress= new address[](0);
 
       }
+       modifier isOwner {
+         require(msg.sender == owner, "You are not the owner");
+         _;
+       }
 }
