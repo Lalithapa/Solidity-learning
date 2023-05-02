@@ -1,0 +1,39 @@
+//SPDX-License-Identifier:MIT 
+pragma solidity ^0.8.9;
+
+    import "./priceConverter.sol";
+
+contract FundMe{
+     using PriceConverter for uint256;
+
+    uint public MINIMUM_USD=50;
+     address[] public funderdsAddress;
+     bool public kjuahd;
+     mapping(address => uint256) public amountFunded;
+     function fundme() payable public {
+        
+     require( msg.value.getConversionRate() > MINIMUM_USD, "You need to spend more ETH!");
+     funderdsAddress.push(msg.sender);
+     amountFunded[msg.sender]= msg.value;
+     }
+      function withdraw() public {
+         // payable(0x5B38Da6a701c568545dCfcB03FcB875f56beddC4).transfer();
+          for(uint i = 0 ; i< funderdsAddress.length ; i++){
+              address fundAdd = funderdsAddress[i];
+              amountFunded[fundAdd]=0;
+          }
+            //transfer
+            // payable(msg.sender).transfer(address(this).balance);
+            //address(this).balance - refers to whole contract balance
+            //if fails , it automatically reverts 
+
+            //send 
+            //bool sendPaymentStatus = payable(msg.sender).send(address(this).balance);
+            //  require(sendPaymentStatus, "Payment Unsuccessfull"); // This will revert 
+              //call
+              (bool callSuccess ,)=payable(msg.sender).call{value:address(this).balance}("");
+            require(callSuccess , " Call Success Failed");
+            funderdsAddress= new address[](0);
+
+      }
+}
