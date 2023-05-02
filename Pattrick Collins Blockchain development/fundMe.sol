@@ -2,21 +2,21 @@
 pragma solidity ^0.8.9;
 
     import "./priceConverter.sol";
-
+//813556   , now 717979
+error NotOwner();
 contract FundMe{
      using PriceConverter for uint256;
-     address public owner;
+     address public immutable i_owner;
 
      constructor(){
-       owner = msg.sender;
+       i_owner = msg.sender;
      }
 
-    uint public MINIMUM_USD=50;
+    uint public constant MINIMUM_USD=50 *1e18;
      address[] public funderdsAddress;
-     uint public kjuahd;
+
      mapping(address => uint256) public amountFunded;
      function fundme() payable public {
-        kjuahd= msg.value.getConversionRate();
      require( msg.value.getConversionRate() > MINIMUM_USD, "You need to spend more ETH!");
      funderdsAddress.push(msg.sender);
      amountFunded[msg.sender]= msg.value;
@@ -42,7 +42,9 @@ contract FundMe{
 
       }
        modifier isOwner {
-         require(msg.sender == owner, "You are not the owner");
+         if(msg.sender == i_owner) revert NotOwner();
+         //require(msg.sender == i_owner, "You are not the owner");
          _;
        }
+      
 }
